@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Zadanie MOBV</string>
+    <string name="profile_screen">Profile</string>
+    <string name="profile_gps">Turn on GPS</string>
+    <string name="time_of_tracking">Time for leaving GPS on (minutes)</string>
+    <string name="change_password">Change password</string>
+
+</resources>
