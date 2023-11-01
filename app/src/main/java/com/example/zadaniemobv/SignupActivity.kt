@@ -1,17 +1,16 @@
-package com.example.zadaniemobv.fragments
+package com.example.zadaniemobv
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import com.example.zadaniemobv.R
 
 class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_signup)
 
-        val submitButton: Button = findViewById(R.id.signup_button)
+        val submitButton: Button = findViewById(R.id.forgot_password_button)
         submitButton.setOnClickListener {
             // Logika po kliknutí na tlačidlo, napríklad na získanie textu z EditText
             val password: String = findViewById<EditText>(R.id.password).text.toString()
@@ -20,7 +19,7 @@ class SignupActivity : AppCompatActivity() {
                 Log.d("Error", "Passwords dont match")
             }
             val username: String = findViewById<EditText>(R.id.code_text).text.toString()
-            val email: String = findViewById<EditText>(R.id.email_signup).text.toString()
+            val email: String = findViewById<EditText>(R.id.code).text.toString()
 
         }
     }

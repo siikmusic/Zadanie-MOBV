@@ -1,4 +1,4 @@
-package com.example.zadaniemobv.fragments
+package com.example.zadaniemobv
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.zadaniemobv.R
 
 data class MyItem(val imageResource: Int, val text: String,val id: Int)
 {
