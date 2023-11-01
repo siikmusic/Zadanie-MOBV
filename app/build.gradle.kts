@@ -52,5 +52,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.google.code.gson:gson:2.10")
+    implementation("com.mapbox.maps:android:10.16.0")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
+
 
 }

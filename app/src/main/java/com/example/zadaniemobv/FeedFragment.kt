@@ -38,7 +38,6 @@ class FeedFragment : Fragment(com.example.zadaniemobv.R.layout.fragment_feed) {
         val feedAdapter = FeedAdapter()
         recyclerView.adapter = feedAdapter
         viewModel.feed_items.observe(viewLifecycleOwner) { items ->
-            // Tu môžete aktualizovať UI podľa hodnoty stringValue
             feedAdapter.updateItems(items)
         }
         viewModel.updateItems(listOf(

@@ -9,11 +9,7 @@ import androidx.navigation.fragment.findNavController
 class MapFragment : Fragment(R.layout.fragment_map) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val feedButton: Button = view.findViewById(R.id.feed_button)
-        feedButton.setOnClickListener {
-            findNavController().navigate(R.id.action_mapFragment_to_feedFragment)
 
-        }
     }
 
 }

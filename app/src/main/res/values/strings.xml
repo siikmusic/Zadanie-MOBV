@@ -4,5 +4,6 @@
     <string name="profile_gps">Turn on GPS</string>
     <string name="time_of_tracking">Time for leaving GPS on (minutes)</string>
     <string name="change_password">Change password</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoieHBhdmxpa3MiLCJhIjoiY2xvZzZmOHlsMHpzcjJpbWVzZjIyNnl3byJ9.y4qcUjigGslg3mbjdyw1YA</string>
 
 </resources>

@@ -2,6 +2,8 @@ package com.example.zadaniemobv
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Debug
+import android.util.Log
 import com.example.zadaniemobv.model.DataUser
 import com.example.zadaniemobv.model.User
 
@@ -27,6 +29,7 @@ class PreferenceData private constructor() {
 
         private const val shpKey = "com.example.zadaniemobv"
         private const val userKey = "userKey"
+        private var sharingLocation = false;
 
     }
     fun clearData(context: Context?) {
@@ -51,6 +54,16 @@ class PreferenceData private constructor() {
         val json = sharedPref.getString(userKey, null) ?: return null
 
         return DataUser.fromJson(json)
+    }
+
+    fun getSharing(requireContext: Context): Boolean? {
+
+        return sharingLocation;
+    }
+
+    fun putSharing(requireContext: Context, b: Boolean) {
+        sharingLocation = b;
+        Log.d("ger", "sharing: $sharingLocation , $b" )
     }
 
 }
