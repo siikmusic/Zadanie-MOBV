@@ -11,7 +11,7 @@ class ProfileUserFragment : Fragment(R.layout.fragment_user) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val submitButton: Button = view.findViewById(R.id.forgot_password_button)
+        val submitButton: Button = view.findViewById(R.id.signup_button)
         submitButton.setOnClickListener {
             /* val password: String = view.findViewById<EditText>(R.id.password).text.toString()
              val password_confirmed: String = view.findViewById<EditText>(R.id.password2).text.toString()

@@ -1,8 +1,9 @@
-package com.example.zadaniemobv
+package com.example.zadaniemobv.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.zadaniemobv.MyItem
 
 class FeedViewModel : ViewModel() {
     private val _feed_items = MutableLiveData<List<MyItem>>()

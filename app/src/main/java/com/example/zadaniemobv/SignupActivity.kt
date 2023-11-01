@@ -10,7 +10,7 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_signup)
 
-        val submitButton: Button = findViewById(R.id.forgot_password_button)
+        val submitButton: Button = findViewById(R.id.signup_button)
         submitButton.setOnClickListener {
             // Logika po kliknutí na tlačidlo, napríklad na získanie textu z EditText
             val password: String = findViewById<EditText>(R.id.password).text.toString()
@@ -19,7 +19,7 @@ class SignupActivity : AppCompatActivity() {
                 Log.d("Error", "Passwords dont match")
             }
             val username: String = findViewById<EditText>(R.id.code_text).text.toString()
-            val email: String = findViewById<EditText>(R.id.code).text.toString()
+            val email: String = findViewById<EditText>(R.id.email_signup).text.toString()
 
         }
     }
