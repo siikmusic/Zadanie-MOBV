@@ -1,12 +1,13 @@
-package com.example.zadaniemobv
+package com.example.zadaniemobv.fragments
 
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.zadaniemobv.R
 
-class RecoverPassword2Fragment : Fragment(R.layout.fragment_recover_password2) {
+class RecoverPassword1Fragment : Fragment(R.layout.fragment_recover_password1) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -22,7 +23,7 @@ class RecoverPassword2Fragment : Fragment(R.layout.fragment_recover_password2) {
              val email: String = view.findViewById<EditText>(R.id.email).text.toString()
                          */
 
-            findNavController().navigate(R.id.action_recoverPassword2Fragment_to_login_fragment)
+            findNavController().navigate(R.id.action_recoverPassword1Fragment_to_recoverPassword2Fragment)
 
         }
 

@@ -1,4 +1,4 @@
-package com.example.zadaniemobv
+package com.example.zadaniemobv.fragments
 
 import android.os.Bundle
 import android.view.Menu
@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.zadaniemobv.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/login_fragment"
-        android:name="com.example.zadaniemobv.LoginFragment">
+        android:name="com.example.zadaniemobv.fragments.LoginFragment">
 
         <action
             android:id="@+id/action_first_to_second"
@@ -19,7 +19,7 @@
             app:destination="@id/recoverPassword1Fragment" />
     </fragment>
 
-    <fragment android:id="@+id/signup_fragment" android:name="com.example.zadaniemobv.SignUpFragment" >
+    <fragment android:id="@+id/signup_fragment" android:name="com.example.zadaniemobv.fragments.SignUpFragment" >
         <action
             android:id="@+id/action_signup_fragment_to_mapFragment"
             app:destination="@id/mapFragment" />
@@ -29,7 +29,7 @@
     </fragment>
     <fragment
         android:id="@+id/feedFragment"
-        android:name="com.example.zadaniemobv.FeedFragment"
+        android:name="com.example.zadaniemobv.fragments.FeedFragment"
         android:label="FeedFragment" >
         <action
             android:id="@+id/action_feedFragment_to_mapFragment"
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.zadaniemobv.MapFragment"
+        android:name="com.example.zadaniemobv.fragments.MapFragment"
         android:label="MapFragment" >
         <action
             android:id="@+id/action_mapFragment_to_feedFragment"
@@ -57,7 +57,7 @@
     </fragment>
     <fragment
         android:id="@+id/recoverPassword1Fragment"
-        android:name="com.example.zadaniemobv.RecoverPassword1Fragment"
+        android:name="com.example.zadaniemobv.fragments.RecoverPassword1Fragment"
         android:label="RecoverPassword1Fragment" >
         <action
             android:id="@+id/action_recoverPassword1Fragment_to_recoverPassword2Fragment"
@@ -65,7 +65,7 @@
     </fragment>
     <fragment
         android:id="@+id/recoverPassword2Fragment"
-        android:name="com.example.zadaniemobv.RecoverPassword2Fragment"
+        android:name="com.example.zadaniemobv.fragments.RecoverPassword2Fragment"
         android:label="RecoverPassword2Fragment" >
         <action
             android:id="@+id/action_recoverPassword2Fragment_to_login_fragment"
@@ -73,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.zadaniemobv.ProfileFragment"
+        android:name="com.example.zadaniemobv.fragments.ProfileFragment"
         android:label="ProfileFragment" >
         <action
             android:id="@+id/action_profileFragment_to_feedFragment"
@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileUserFragment"
-        android:name="com.example.zadaniemobv.ProfileUserFragment"
+        android:name="com.example.zadaniemobv.fragments.ProfileUserFragment"
         android:label="ProfileUserFragment" />
 
 </navigation>
