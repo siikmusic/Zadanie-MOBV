@@ -70,7 +70,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             val hasPermission = hasPermissions(requireContext())
             onMapReady(hasPermission)
 
-            /*bnd.myLocation.setOnClickListener {
+            bnd.myLocation.setOnClickListener {
                 if (!hasPermissions(requireContext())) {
                     requestPermissionLauncher.launch(
                         Manifest.permission.ACCESS_FINE_LOCATION
@@ -79,7 +79,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     lastLocation?.let { refreshLocation(it) }
                     addLocationListeners()
                 }
-            }*/
+            }
         }
 
     }

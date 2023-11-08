@@ -14,8 +14,26 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             .addHeader("Content-Type", "application/json")
 
 
-        val token = PreferenceData.getInstance().getUser(context)?.access
-        request.header("Authorization","Bearer $token")
+        if (chain.request().url.toUrl().path.contains("/user/create.php", true)
+            || chain.request().url.toUrl().path.contains("/user/login.php", true)
+        ) {
+            //here we do not need a authorization token
+        } else if (chain.request().url.toUrl().path.contains("/user/refresh.php", true)) {
+            //when refreshing token we need to add our user id
+            PreferenceData.getInstance().getUser(context)?.uid?.let {
+                request.header(
+                    "x-user",
+                    it
+                )
+            }
+        } else {
+            //we add auth token
+            val token = PreferenceData.getInstance().getUser(context)?.access
+            request.header(
+                "Authorization",
+                "Bearer $token"
+            )
+        }
 
         // add api key to each request
         request.addHeader("x-apikey", AppConfig.API_KEY)

@@ -9,26 +9,35 @@ import com.example.zadaniemobv.model.User
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val dataRepository: DataRepository) : ViewModel() {
-    private val _registrationResult = MutableLiveData<Pair<String, User?>>()
-    private val _loginResult = MutableLiveData<Pair<String, User?>>()
+    private val _registrationResult = MutableLiveData<String>()
+    val registrationResult: LiveData<String> get() = _registrationResult
 
-    val registrationResult: LiveData<Pair<String, User?>> get() = _registrationResult
-    val loginResult: LiveData<Pair<String, User?>> get() = _loginResult
+    private val _loginResult = MutableLiveData<String>()
+    val loginResult: LiveData<String> get() = _loginResult
+
+    private val _userResult = MutableLiveData<User?>()
+    val userResult: LiveData<User?> get() = _userResult
 
     val username = MutableLiveData<String>()
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
     val repeat_password = MutableLiveData<String>()
-    fun registerUser(username: String, email: String, password: String) {
+    fun registerUser() {
         viewModelScope.launch {
-            _registrationResult.postValue(dataRepository.apiRegisterUser(username, email, password))
+            val result = dataRepository.apiRegisterUser(
+                username.value ?: "",
+                email.value ?: "",
+                password.value ?: ""
+            )
+            _registrationResult.postValue(result.first ?: "")
+            _userResult.postValue(result.second)
         }
     }
     fun loginUser() {
         viewModelScope.launch {
-            val result = dataRepository.apiLoginUser(username.value?:"", password.value?:"")
-            _loginResult.postValue(result)
-            //_userResult.postValue(result.second)
+            val result = dataRepository.apiLoginUser(username.value ?: "", password.value ?: "")
+            _loginResult.postValue(result.first ?: "")
+            _userResult.postValue(result.second)
         }
     }
 }

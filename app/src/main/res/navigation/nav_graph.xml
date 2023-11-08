@@ -97,5 +97,15 @@
             android:id="@+id/action_introFragment_to_login_fragment"
             app:destination="@id/login_fragment" />
     </fragment>
+    <action
+        android:id="@+id/action_to_feed"
+        app:destination="@id/feedFragment" />
 
+    <action
+        android:id="@+id/action_to_map"
+        app:destination="@id/mapFragment" />
+
+    <action
+        android:id="@+id/action_to_profile"
+        app:destination="@id/profileFragment" />
 </navigation>

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Debug
 import android.util.Log
+import com.example.zadaniemobv.api.AppConfig
 import com.example.zadaniemobv.model.DataUser
 import com.example.zadaniemobv.model.User
 
@@ -28,7 +29,7 @@ class PreferenceData private constructor() {
             }
 
         private const val shpKey = "com.example.zadaniemobv"
-        private const val userKey = "userKey"
+        private const val userKey = AppConfig.API_KEY;
         private var sharingLocation = false;
         private const val sharingKey = "sharingKey"
 
@@ -41,7 +42,7 @@ class PreferenceData private constructor() {
         editor.apply()
     }
 
-    fun putUser(context: Context?, user: DataUser?) {
+    fun putUser(context: Context?, user: User?) {
         val sharedPref = getSharedPreferences(context) ?: return
         val editor = sharedPref.edit()
         user?.toJson()?.let {
@@ -51,28 +52,26 @@ class PreferenceData private constructor() {
         editor.apply()
     }
 
-    fun getUser(context: Context?): DataUser? {
+    fun getUser(context: Context?): User? {
         val sharedPref = getSharedPreferences(context) ?: return null
         val json = sharedPref.getString(userKey, null) ?: return null
 
-        return DataUser.fromJson(json)
+        return User.fromJson(json)
     }
 
     fun putSharing(context: Context?, sharing: Boolean) {
         val sharedPref = getSharedPreferences(context) ?: return
         val editor = sharedPref.edit()
         editor.putBoolean(sharingKey, sharing)
-        Log.d("Debug","" + sharing)
-
         editor.apply()
     }
 
     fun getSharing(context: Context?): Boolean {
         val sharedPref = getSharedPreferences(context) ?: return false
         val sharing = sharedPref.getBoolean(sharingKey, false)
-        Log.d("Debug","" + sharing)
 
         return sharing
     }
+
 
 }
