@@ -12,45 +12,62 @@ import android.util.Log
 import android.widget.Switch
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
+import com.example.zadaniemobv.databinding.FragmentFeedBinding
+import com.example.zadaniemobv.databinding.FragmentProfileBinding
 import com.example.zadaniemobv.viewModel.ProfileViewModel
 
 class ProfileFragment: Fragment(R.layout.fragment_profile) {
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    private lateinit var model: ProfileViewModel
-
-    val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted){
-            PreferenceData.getInstance().putSharing(requireContext(),true)
-        }else{
-            PreferenceData.getInstance().putSharing(requireContext(),false)
+    private lateinit var viewModel: ProfileViewModel
+    private  var binding: FragmentProfileBinding? = null
+    val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (!isGranted) {
+                viewModel.sharingLocation.postValue(false)
+            }
         }
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        model = ViewModelProvider(requireActivity())[ProfileViewModel::class.java]
-    }
-    // returns if Permissions are accepted
+
     fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(requireActivity())[ProfileViewModel::class.java]
+    }
+    // returns if Permissions are accepted
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.sharingLocation.postValue(PreferenceData.getInstance().getSharing(requireContext()))
 
-        val switch: SwitchCompat = view.findViewById(R.id.switch1)
+        binding = FragmentProfileBinding.bind(view).apply {
+            lifecycleOwner = viewLifecycleOwner
+            model = viewModel
+        }.also { bnd->
+            viewModel.sharingLocation.postValue(PreferenceData.getInstance().getSharing(requireContext()))
 
-        model.sharingLocation.observe(viewLifecycleOwner) { sharing ->
-            if (sharing == true) {
-                PreferenceData.getInstance().putSharing(requireContext(),sharing)
-                Log.d("ewf","" + sharing)
-            } else {
-                Log.d("ewf","" + sharing)
-
+            viewModel.sharingLocation.observe(viewLifecycleOwner) {
+                it?.let {
+                    if (it) {
+                        if (!hasPermissions(requireContext())) {
+                            viewModel.sharingLocation.postValue(false)
+                            requestPermissionLauncher.launch(
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            )
+                        } else {
+                            PreferenceData.getInstance().putSharing(requireContext(), true)
+                        }
+                    } else {
+                        PreferenceData.getInstance().putSharing(requireContext(), false)
+                    }
+                }
+            }
             }
         }
 
 
+
+
+
     }
-}

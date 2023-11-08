@@ -30,6 +30,8 @@ class PreferenceData private constructor() {
         private const val shpKey = "com.example.zadaniemobv"
         private const val userKey = "userKey"
         private var sharingLocation = false;
+        private const val sharingKey = "sharingKey"
+
 
     }
     fun clearData(context: Context?) {
@@ -49,21 +51,28 @@ class PreferenceData private constructor() {
         editor.apply()
     }
 
-    fun getUser(context: Context?): User? {
+    fun getUser(context: Context?): DataUser? {
         val sharedPref = getSharedPreferences(context) ?: return null
         val json = sharedPref.getString(userKey, null) ?: return null
 
         return DataUser.fromJson(json)
     }
 
-    fun getSharing(requireContext: Context): Boolean? {
+    fun putSharing(context: Context?, sharing: Boolean) {
+        val sharedPref = getSharedPreferences(context) ?: return
+        val editor = sharedPref.edit()
+        editor.putBoolean(sharingKey, sharing)
+        Log.d("Debug","" + sharing)
 
-        return sharingLocation;
+        editor.apply()
     }
 
-    fun putSharing(requireContext: Context, b: Boolean) {
-        sharingLocation = b;
-        Log.d("ger", "sharing: $sharingLocation , $b" )
+    fun getSharing(context: Context?): Boolean {
+        val sharedPref = getSharedPreferences(context) ?: return false
+        val sharing = sharedPref.getBoolean(sharingKey, false)
+        Log.d("Debug","" + sharing)
+
+        return sharing
     }
 
 }

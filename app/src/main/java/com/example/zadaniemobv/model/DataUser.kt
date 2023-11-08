@@ -8,7 +8,9 @@ data class DataUser(
     val email: String,
     val id: String,
     val access: String,
-    val refresh: String
+    val refresh: String,
+    val photo: String
+
 )
  {
 
@@ -22,9 +24,9 @@ data class DataUser(
     }
 
     companion object {
-        fun fromJson(string: String): User? {
+        fun fromJson(string: String): DataUser? {
             return try {
-                Gson().fromJson(string, User::class.java)
+                Gson().fromJson(string, DataUser::class.java)
             } catch (ex: IOException) {
                 ex.printStackTrace()
                 null

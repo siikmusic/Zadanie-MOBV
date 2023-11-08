@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class ProfileViewModel : ViewModel() {
+
     val sharingLocation = MutableLiveData<Boolean?>(null)
 
 }

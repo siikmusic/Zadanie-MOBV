@@ -1,5 +1,10 @@
 package com.example.zadaniemobv.api
 
+import android.content.Context
+import com.example.zadaniemobv.interceptor.AuthInterceptor
+import com.example.zadaniemobv.interceptor.TokenAuthenticator
+import okhttp3.OkHttpClient
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,11 +34,23 @@ interface ApiService {
         @HeaderMap header: Map<String, String>,
         @Body refreshInfo: RefreshTokenRequest
     ): Response<RefreshTokenResponse>
+    @POST("user/refresh.php")
+    fun refreshTokenBlocking(
+        @Body refreshInfo: RefreshTokenRequest
+    ): Call<RefreshTokenResponse>
+
+
     companion object{
-        fun create(): ApiService {
+        fun create(context: Context): ApiService {
+
+            val client = OkHttpClient.Builder()
+                .addInterceptor(AuthInterceptor(context))
+                .authenticator(TokenAuthenticator(context))
+                .build()
 
             val retrofit = Retrofit.Builder()
                 .baseUrl("https://zadanie.mpage.sk/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 

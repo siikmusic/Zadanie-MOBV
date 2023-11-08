@@ -1,5 +1,6 @@
 package com.example.zadaniemobv.api
 
+import android.content.Context
 import com.example.zadaniemobv.model.User
 import java.io.IOException
 
@@ -13,10 +14,10 @@ class DataRepository private constructor(
         private var INSTANCE: DataRepository? = null
         private val lock = Any()
 
-        fun getInstance(): DataRepository =
+        fun getInstance(context: Context): DataRepository =
             INSTANCE ?: synchronized(lock) {
                 INSTANCE
-                    ?: DataRepository(ApiService.create()).also { INSTANCE = it }
+                    ?: DataRepository(ApiService.create(context)).also { INSTANCE = it }
             }
     }
     suspend fun apiRegisterUser(username: String, email: String, password: String) : Pair<String,User?>{
