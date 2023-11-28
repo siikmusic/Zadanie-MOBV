@@ -16,12 +16,15 @@ import com.example.zadaniemobv.viewModel.FeedViewModel
 import androidx.navigation.ui.R
 import androidx.navigation.ui.setupWithNavController
 import com.example.zadaniemobv.api.DataRepository
+import com.example.zadaniemobv.viewModel.LocationViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class FeedFragment : Fragment(com.example.zadaniemobv.R.layout.fragment_feed) {
     private lateinit var viewModel: FeedViewModel
     private lateinit var binding: FragmentFeedBinding
+
+    private lateinit var sharedViewModel: LocationViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,28 +48,46 @@ class FeedFragment : Fragment(com.example.zadaniemobv.R.layout.fragment_feed) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var feedAdapter = FeedAdapter(0.0, 0.0)
+        sharedViewModel = ViewModelProvider(requireActivity())[LocationViewModel::class.java]
 
+        // Setup RecyclerView with the adapter
+        binding.feedRecyclerview.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = feedAdapter
+        }
+
+        // Observe location updates from sharedViewModel
+        sharedViewModel.location.observe(viewLifecycleOwner) { location ->
+            val (lat, lon) = location
+            // Update adapter with actual location
+            feedAdapter = FeedAdapter(lat, lon)
+            binding.feedRecyclerview.adapter = feedAdapter
+
+            // Make sure to reload or update your feed items here
+            viewModel.feed_items.value?.let { items ->
+                feedAdapter.updateItems(items)
+            }
+        }
+
+        // Observe feed items from viewModel
+        viewModel.feed_items.observe(viewLifecycleOwner) { items ->
+            Log.d("FeedFragment", "new values $items")
+            feedAdapter.updateItems(items ?: emptyList())
+        }
+
+        // Existing code for pull-to-refresh and loading indicator
+        binding.pullRefresh.setOnRefreshListener {
+            viewModel.updateItems()
+        }
+        viewModel.loading.observe(viewLifecycleOwner) {
+            binding.pullRefresh.isRefreshing = it
+        }
+
+        // Apply binding
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             model = viewModel
-        }.also { bnd ->
-
-            bnd.feedRecyclerview.layoutManager = LinearLayoutManager(context)
-            val feedAdapter = FeedAdapter()
-            bnd.feedRecyclerview.adapter = feedAdapter
-
-            viewModel.feed_items.observe(viewLifecycleOwner) { items ->
-                Log.d("FeedFragment", "nove hodnoty $items")
-                feedAdapter.updateItems(items ?: emptyList())
-            }
-
-            bnd.pullRefresh.setOnRefreshListener {
-                viewModel.updateItems()
-            }
-            viewModel.loading.observe(viewLifecycleOwner) {
-                bnd.pullRefresh.isRefreshing = it
-            }
-
         }
 
     }

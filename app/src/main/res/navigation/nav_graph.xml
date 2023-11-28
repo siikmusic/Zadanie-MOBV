@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileUserFragment"
-        android:name="com.example.zadaniemobv.ProfileUserFragment"
+        android:name="com.example.zadaniemobv.UserDetailFragment"
         android:label="ProfileUserFragment" />
     <fragment
         android:id="@+id/introFragment"

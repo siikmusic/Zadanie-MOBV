@@ -32,7 +32,6 @@ class FeedViewModel(private val repository: DataRepository) : ViewModel() {
             loading.postValue(true)
             _message.postValue(Evento(repository.apiListGeofence()))
             loading.postValue(false)
-            Log.d("debugg",repository.apiListGeofence())
         }
     }
 }

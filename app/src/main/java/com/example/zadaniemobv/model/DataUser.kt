@@ -2,16 +2,16 @@ package com.example.zadaniemobv.model
 
 import com.google.gson.Gson
 import java.io.IOException
+import java.io.Serializable
 
 data class DataUser(
     val username: String,
-    val email: String,
-    val id: String,
-    val access: String,
-    val refresh: String,
-    val photo: String
+    val photo: String,
+    val lat: Double,
+    val lon: Double,
+    val radius: Double
 
-)
+): Serializable
  {
 
     fun toJson(): String? {

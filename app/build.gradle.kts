@@ -63,7 +63,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:18.0.0")
     kapt("androidx.room:room-compiler:2.6.0")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
-
+    implementation ("com.squareup.picasso:picasso:2.8")
 
 
 }
