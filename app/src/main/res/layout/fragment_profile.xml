@@ -34,29 +34,27 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/map_text"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:src="@drawable/person_fill0_wght400_grad0_opsz24" />
 
     <TextView
         android:id="@+id/username_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@{model.userResult.username}"
+        android:text=""
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
-    <EditText
+    <TextView
         android:id="@+id/email_text"
         android:layout_width="281dp"
         android:layout_height="50dp"
         android:layout_marginTop="12dp"
         android:ems="10"
-        android:inputType="text"
-        android:text="@{model.userResult.email}"
-
+        android:text="@{model.userResult.username}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,21 +89,21 @@
         app:layout_constraintEnd_toStartOf="@+id/email_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/email_text"
-        app:srcCompat="@android:drawable/ic_dialog_email"
+        app:srcCompat="@android:drawable/ic_dialog_info"
         app:tint="#090000" />
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="E-mail"
+        android:text="Username"
         app:layout_constraintBottom_toTopOf="@+id/email_text"
         app:layout_constraintStart_toStartOf="@+id/email_text" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch1"
         android:layout_width="136dp"
-        android:layout_height="45dp"
+        android:layout_height="48dp"
         android:layout_marginTop="4dp"
         android:checked="@={model.sharingLocation}"
         android:text="@string/profile_gps"

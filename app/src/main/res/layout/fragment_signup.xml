@@ -15,7 +15,7 @@
         tools:context=".SignupActivity">
 
         <EditText
-            android:id="@+id/email_signup"
+            android:id="@+id/current_password"
             android:layout_width="295dp"
             android:layout_height="54dp"
             android:ems="10"
@@ -51,10 +51,10 @@
             android:onClick="@{()->model.registerUser()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password" />
+            app:layout_constraintTop_toBottomOf="@+id/new_password2" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/new_password2"
             android:layout_width="295dp"
             android:layout_height="51dp"
             android:layout_marginTop="20dp"
@@ -66,7 +66,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email_signup"
+            app:layout_constraintTop_toBottomOf="@+id/current_password"
             app:layout_constraintVertical_bias="0.017" />
 
         <EditText
@@ -80,7 +80,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password"
+            app:layout_constraintTop_toBottomOf="@+id/new_password2"
             app:layout_constraintVertical_bias="0.058" />
 
         <TextView
@@ -88,11 +88,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Password"
-            app:layout_constraintBottom_toTopOf="@+id/password"
-            app:layout_constraintEnd_toEndOf="@+id/email_signup"
+            app:layout_constraintBottom_toTopOf="@+id/new_password2"
+            app:layout_constraintEnd_toEndOf="@+id/current_password"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/email_signup"
-            app:layout_constraintTop_toBottomOf="@+id/email_signup"
+            app:layout_constraintStart_toStartOf="@+id/current_password"
+            app:layout_constraintTop_toBottomOf="@+id/current_password"
             app:layout_constraintVertical_bias="0.125" />
 
         <TextView
@@ -104,7 +104,7 @@
             app:layout_constraintEnd_toEndOf="@+id/password2"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/password2"
-            app:layout_constraintTop_toBottomOf="@+id/email_signup"
+            app:layout_constraintTop_toBottomOf="@+id/current_password"
             app:layout_constraintVertical_bias="1.0" />
 
         <TextView
@@ -112,10 +112,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="E-mail"
-            app:layout_constraintBottom_toTopOf="@+id/email_signup"
-            app:layout_constraintEnd_toEndOf="@+id/email_signup"
+            app:layout_constraintBottom_toTopOf="@+id/current_password"
+            app:layout_constraintEnd_toEndOf="@+id/current_password"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/email_signup"
+            app:layout_constraintStart_toStartOf="@+id/current_password"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
 

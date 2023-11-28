@@ -28,9 +28,8 @@ class PreferenceData private constructor() {
                     ?: PreferenceData().also { INSTANCE = it }
             }
 
-        private const val shpKey = "com.example.zadaniemobv"
-        private const val userKey = AppConfig.API_KEY;
-        private var sharingLocation = false;
+        private const val shpKey = "shpKey"
+        private const val userKey = "userKey";
         private const val sharingKey = "sharingKey"
 
 

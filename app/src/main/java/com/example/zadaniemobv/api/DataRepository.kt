@@ -1,6 +1,7 @@
 package com.example.zadaniemobv.api
 
 import android.content.Context
+import android.util.Log
 import com.example.zadaniemobv.db.AppRoomDatabase
 import com.example.zadaniemobv.entities.GeofenceEntity
 import com.example.zadaniemobv.entities.UserEntity
@@ -48,6 +49,9 @@ class DataRepository private constructor(
             val response = service.registerUser(UserRegistration(username, email, password))
             if (response.isSuccessful) {
                 response.body()?.let { json_response ->
+                    if(json_response.uid == "-2"){
+                        return Pair("Failed to create user", null)
+                    }
                     return Pair(
                         "",
                         User(
@@ -69,26 +73,36 @@ class DataRepository private constructor(
         }
         return Pair("Fatal error. Failed to create user.", null)
     }
-    suspend fun apiLoginUser(email: String, password: String) : Pair<String,User?>{
 
-        if (email.isEmpty()){
+    suspend fun apiLoginUser(username: String, password: String): Pair<String, User?> {
+
+        if (username.isEmpty()) {
             return Pair("Email can not be empty", null)
         }
-        if (password.isEmpty()){
+        if (password.isEmpty()) {
             return Pair("Password can not be empty", null)
         }
         try {
-            val response = service.loginUser(UserLogin(email, password))
+            val response = service.loginUser(UserLogin(username, password))
             if (response.isSuccessful) {
                 response.body()?.let { json_response ->
                     if (json_response.uid == "-1") {
                         return Pair("Wrong password or username.", null)
                     }
-                    return Pair("", User("username",email,json_response.uid, json_response.access, json_response.refresh))
+                    return Pair(
+                        "",
+                        User(
+                            username,
+                            username,
+                            json_response.uid,
+                            json_response.access,
+                            json_response.refresh
+                        )
+                    )
                 }
             }
             return Pair("Failed to login user", null)
-        }catch (ex: IOException) {
+        } catch (ex: IOException) {
             ex.printStackTrace()
             return Pair("Check internet connection. Failed to login user.", null)
         } catch (ex: Exception) {
@@ -96,6 +110,7 @@ class DataRepository private constructor(
         }
         return Pair("Fatal error. Failed to create user.", null)
     }
+
     suspend fun apiGetUser(
         uid: String
     ): Pair<String, User?> {
@@ -104,6 +119,7 @@ class DataRepository private constructor(
 
             if (response.isSuccessful) {
                 response.body()?.let {
+                    Log.d("responsetest", response.body().toString());
                     return Pair("", User(it.name, "", it.id, "", "", it.photo))
                 }
             }
@@ -117,7 +133,30 @@ class DataRepository private constructor(
         }
         return Pair("Fatal error. Failed to load user.", null)
     }
-
+    suspend fun apiResetPassword(
+        email: String
+    ): Pair<String, String?>{
+        if(email == "") {
+            return Pair("Error sending the email","")
+        }
+        val response = service.resetPassword(ResetPasswordRequest(email))
+        if(response.isSuccessful) {
+            response.body()?.let {
+                return Pair("Reset e-mail sent to your email address",it.status)
+            }
+        }
+        else {
+            response.body()?.let {
+                return Pair(it.message,it.status)
+            }
+        }
+        return Pair("Error sending the email","")
+    }
+    suspend fun apiChangePassword(
+        email: String
+    ):Pair<String, String?>?{
+        return null;
+    }
     suspend fun insertGeofence(item: GeofenceEntity) {
         cache.insertGeofence(item)
         try {
@@ -160,6 +199,7 @@ class DataRepository private constructor(
             ex.printStackTrace()
         }
     }
+
     suspend fun apiListGeofence(): String {
         try {
             val response = service.listGeofence()
@@ -186,6 +226,7 @@ class DataRepository private constructor(
         }
         return "Fatal error. Failed to load users."
     }
+
     fun getUsers() = cache.getUsers()
     suspend fun getUsersList() = cache.getUsersList()
 

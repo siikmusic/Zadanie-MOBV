@@ -1,5 +1,6 @@
 package com.example.zadaniemobv.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,7 @@ class FeedViewModel(private val repository: DataRepository) : ViewModel() {
             loading.postValue(true)
             _message.postValue(Evento(repository.apiListGeofence()))
             loading.postValue(false)
+            Log.d("debugg",repository.apiListGeofence())
         }
     }
 }

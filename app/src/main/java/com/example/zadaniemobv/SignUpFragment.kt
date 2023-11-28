@@ -61,7 +61,8 @@ class SignUpFragment : Fragment() {
             viewModel.userResult.observe(viewLifecycleOwner) {
                 it?.let { user ->
                     PreferenceData.getInstance().putUser(requireContext(), user)
-                    requireView().findNavController().navigate(R.id.action_signup_fragment_to_mapFragment)
+                    requireView().findNavController()
+                        .navigate(R.id.action_signup_fragment_to_mapFragment)
                 } ?: PreferenceData.getInstance().putUser(requireContext(), null)
             }
         }

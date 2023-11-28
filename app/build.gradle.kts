@@ -62,6 +62,7 @@ dependencies {
     implementation("com.mapbox.maps:android:10.16.0")
     implementation("com.google.android.gms:play-services-location:18.0.0")
     kapt("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 
 
 

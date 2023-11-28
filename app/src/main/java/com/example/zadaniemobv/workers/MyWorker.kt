@@ -18,12 +18,10 @@ class MyWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        // Tu môžete vykonávať asynchrónnu prácu
-        Log.d("MyWorker", "spustenie workera")
+
         DataRepository.getInstance(applicationContext).apiListGeofence()
 
         createNotification(applicationContext)
-
         return Result.success()
     }
 

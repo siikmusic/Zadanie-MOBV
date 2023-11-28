@@ -1,5 +1,6 @@
 package com.example.zadaniemobv.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,6 +24,8 @@ class ProfileViewModel(private val dataRepository: DataRepository) : ViewModel()
             val result = dataRepository.apiGetUser(uid)
             _profileResult.postValue(result.first ?: "")
             _userResult.postValue(result.second)
+            Log.d("debugload",result.first.toString() + " " + result.second.toString())
+
         }
     }
 

@@ -13,13 +13,13 @@ class SignupActivity : AppCompatActivity() {
         val submitButton: Button = findViewById(R.id.signup_button)
         submitButton.setOnClickListener {
             // Logika po kliknutí na tlačidlo, napríklad na získanie textu z EditText
-            val password: String = findViewById<EditText>(R.id.password).text.toString()
+            val password: String = findViewById<EditText>(R.id.new_password2).text.toString()
             val password_confirmed: String = findViewById<EditText>(R.id.password2).text.toString()
             if (password != password_confirmed){
                 Log.d("Error", "Passwords dont match")
             }
             val username: String = findViewById<EditText>(R.id.code_text).text.toString()
-            val email: String = findViewById<EditText>(R.id.email_signup).text.toString()
+            val email: String = findViewById<EditText>(R.id.current_password).text.toString()
 
         }
     }

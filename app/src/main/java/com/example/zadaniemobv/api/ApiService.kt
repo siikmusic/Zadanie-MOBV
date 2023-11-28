@@ -18,16 +18,16 @@ import retrofit2.http.Query
 
 interface ApiService {
     @POST("user/create.php")
-
     suspend fun registerUser(@Body userInfo: UserRegistration): Response<RegistrationResponse>
 
-    @POST("user/create.php")
+    @POST("user/login.php")
     suspend fun loginUser(@Body userInfo: UserLogin): Response<RegistrationResponse>
     @GET("user/get.php")
     suspend fun getUser(
         @Query("id") id: String
     ): Response<UserResponse>
-
+    @POST("user/reset.php")
+    suspend fun resetPassword(@Body resetInfo: ResetPasswordRequest): Response<ResetPasswordResponse>
     @POST("user/refresh.php")
     fun refreshTokenBlocking(
         @Body refreshInfo: RefreshTokenRequest
@@ -62,13 +62,16 @@ interface ApiService {
 data class UserRegistration(val name: String, val email: String, val password: String)
 data class RegistrationResponse(val uid: String, val access: String, val refresh: String)
 
-data class UserLogin(val email: String, val password: String)
+data class UserLogin(val name: String, val password: String)
 data class RefreshTokenRequest(val refresh: String)
 data class RefreshTokenResponse(val uid: String, val access: String, val refresh: String)
 
 data class LoginResponse(val uid: String, val access: String, val refresh: String)
 
-data class UserResponse(val email: String, val password: String, val id: String,val name: String, val photo: String)
+data class ResetPasswordRequest(val email: String)
+
+data class ResetPasswordResponse(val status:String, val message:String)
+data class UserResponse(val id: String, val name: String, val photo: String)
 data class GeofenceUpdateRequest(val lat: Double, val lon: Double, val radius: Double)
 data class GeofenceListResponse(
     val me: GeofenceListMeResponse,

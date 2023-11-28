@@ -55,7 +55,6 @@ class FeedFragment : Fragment(com.example.zadaniemobv.R.layout.fragment_feed) {
             val feedAdapter = FeedAdapter()
             bnd.feedRecyclerview.adapter = feedAdapter
 
-            // Pozorovanie zmeny hodnoty
             viewModel.feed_items.observe(viewLifecycleOwner) { items ->
                 Log.d("FeedFragment", "nove hodnoty $items")
                 feedAdapter.updateItems(items ?: emptyList())

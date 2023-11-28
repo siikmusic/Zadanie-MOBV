@@ -99,33 +99,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val user = PreferenceData.getInstance().getUser(requireContext())
+        user?.let {
+            viewModel.loadUser(user.uid)
+        }
         binding.apply {
             lifecycleOwner = viewLifecycleOwner
             model = viewModel
         }.also { bnd ->
-
-            /*bnd.loadProfileBtn.setOnClickListener {
-                val user = PreferenceData.getInstance().getUser(requireContext())
-                user?.let {
-                    viewModel.loadUser(it.id)
-                }
-            }
-
-            bnd.logoutBtn.setOnClickListener {
-                PreferenceData.getInstance().clearData(requireContext())
-                it.findNavController().navigate(R.id.action_profile_intro)
-            }
-
-            viewModel.profileResult.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    Snackbar.make(
-                        bnd.loadProfileBtn,
-                        it,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }*/
 
             bnd.switch1.isChecked = PreferenceData.getInstance().getSharing(requireContext())
             bnd.switch1.setOnCheckedChangeListener { _, checked ->
@@ -154,7 +135,6 @@ class ProfileFragment : Fragment() {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) {
-            // Logika pre prácu s poslednou polohou
             Log.d("ProfileFragment", "poloha posledna ${it ?: "-"}")
             if (it == null) {
                 Log.e("ProfileFragment", "poloha neznama geofence nevytvoreny")
@@ -189,23 +169,29 @@ class ProfileFragment : Fragment() {
             .build()
 
         val intent = Intent(requireActivity(), GeofenceBroadcastReceiver::class.java)
-        val geofencePendingIntent =
+        var geofencePendingIntent: PendingIntent? = null
+        geofencePendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PendingIntent.getBroadcast(
                 requireActivity(),
                 0,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
             )
-
+        } else {
+            PendingIntent.getBroadcast(
+                requireActivity(),
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
+            )
+        }
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
             addOnSuccessListener {
-                // Geofences boli úspešne pridané
                 Log.d("ProfileFragment", "geofence vytvoreny")
                 viewModel.updateGeofence(location.latitude, location.longitude, 100.0)
                 runWorker()
             }
             addOnFailureListener {
-                // Chyba pri pridaní geofences
                 it.printStackTrace()
                 binding.switch1.isChecked = false
                 PreferenceData.getInstance().putSharing(requireContext(), false)

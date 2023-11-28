@@ -58,10 +58,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             viewModel.userResult.observe(viewLifecycleOwner) {
                 it?.let { user ->
                     PreferenceData.getInstance().putUser(requireContext(), user)
-                    requireView().findNavController().navigate(R.id.action_login_fragment_to_mapFragment)
+                    requireView().findNavController()
+                        .navigate(R.id.action_login_fragment_to_mapFragment)
                 } ?: PreferenceData.getInstance().putUser(requireContext(), null)
             }
+            bnd.forgotPassword.setOnClickListener {
+                requireView().findNavController()
+                    .navigate(R.id.action_login_fragment_to_recoverPassword1Fragment)
 
+            }
         }
     }
 }
