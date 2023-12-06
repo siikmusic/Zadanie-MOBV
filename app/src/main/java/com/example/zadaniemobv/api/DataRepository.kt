@@ -6,10 +6,13 @@ import com.example.zadaniemobv.db.AppRoomDatabase
 import com.example.zadaniemobv.entities.GeofenceEntity
 import com.example.zadaniemobv.entities.UserEntity
 import com.example.zadaniemobv.model.User
+import okhttp3.MultipartBody
+import retrofit2.Response
 import java.io.IOException
 
 class DataRepository private constructor(
     private val service: ApiService,
+    private val uploadService: UploadApiService,
     private val cache: LocalCache
 
 ) {
@@ -26,6 +29,7 @@ class DataRepository private constructor(
                 INSTANCE
                     ?: DataRepository(
                         ApiService.create(context),
+                        UploadApiService.create(context),
                         LocalCache(AppRoomDatabase.getInstance(context).appDao())
                     ).also { INSTANCE = it }
             }
@@ -153,9 +157,29 @@ class DataRepository private constructor(
         return Pair("Error sending the email","")
     }
     suspend fun apiChangePassword(
-        email: String
-    ):Pair<String, String?>?{
-        return null;
+        currentPassword: String,
+        newPassword:String,
+        repeatPassword:String
+    ): Pair<String, String?> {
+        if(currentPassword == "") {
+            return Pair("Password is empty","")
+        }
+        if(newPassword == "") {
+            return Pair("Password is empty","")
+        }
+        if(repeatPassword == "") {
+            return Pair("Password is empty","")
+        }
+        if(repeatPassword != newPassword){
+            return Pair("Passwords don't match","")
+        }
+        val response = service.resetKnownPassword(ResetKnownPasswordRequest(currentPassword,newPassword))
+        if(response.isSuccessful) {
+            response.body()?.let {
+                return Pair("Password changed successfully",it.status)
+            }
+        }
+        return Pair("There was an error changing the password","")
     }
     suspend fun insertGeofence(item: GeofenceEntity) {
         cache.insertGeofence(item)
@@ -203,7 +227,7 @@ class DataRepository private constructor(
     suspend fun apiListGeofence(): String {
         try {
             val response = service.listGeofence()
-
+            //Log.d("API LIST GEO",re)
             if (response.isSuccessful) {
                 response.body()?.list?.let {
                     val users = it.map {
@@ -228,6 +252,28 @@ class DataRepository private constructor(
     }
 
     fun getUsers() = cache.getUsers()
+    suspend fun logout() = cache.logoutUser()
     suspend fun getUsersList() = cache.getUsersList()
+    suspend fun uploadProfileImage(image: MultipartBody.Part): Response<UploadApiService.UploadImageResponse>? {
+        try {
+            val response =
+                uploadService.uploadProfileImage(image)
+            return response;
 
+
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            return null
+        }
+    }
+    suspend fun deleteProfileImage(): Response<UploadApiService.UploadImageResponse>? {
+        return try {
+            val response =
+                uploadService.deleteProfileImage()
+            response
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            null
+        }
+    }
 }

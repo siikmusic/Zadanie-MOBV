@@ -49,12 +49,14 @@ class SignUpFragment : Fragment() {
         }.also { bnd ->
 
             viewModel.registrationResult.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    Snackbar.make(
-                        bnd.signupButton,
-                        it,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                if (it != null) {
+                    if (it.isNotEmpty()) {
+                        Snackbar.make(
+                            bnd.signupButton,
+                            it,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
 

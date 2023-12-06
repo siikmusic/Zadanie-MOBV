@@ -28,6 +28,9 @@ interface ApiService {
     ): Response<UserResponse>
     @POST("user/reset.php")
     suspend fun resetPassword(@Body resetInfo: ResetPasswordRequest): Response<ResetPasswordResponse>
+    @POST("user/password.php")
+    suspend fun resetKnownPassword(@Body resetInfo: ResetKnownPasswordRequest): Response<ResetKnownPasswordResponse>
+
     @POST("user/refresh.php")
     fun refreshTokenBlocking(
         @Body refreshInfo: RefreshTokenRequest
@@ -69,6 +72,8 @@ data class RefreshTokenResponse(val uid: String, val access: String, val refresh
 data class LoginResponse(val uid: String, val access: String, val refresh: String)
 
 data class ResetPasswordRequest(val email: String)
+data class ResetKnownPasswordRequest(val old_password: String, val new_password: String)
+data class ResetKnownPasswordResponse(val status:String)
 
 data class ResetPasswordResponse(val status:String, val message:String)
 data class UserResponse(val id: String, val name: String, val photo: String)

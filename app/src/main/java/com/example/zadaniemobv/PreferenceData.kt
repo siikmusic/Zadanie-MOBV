@@ -57,7 +57,12 @@ class PreferenceData private constructor() {
 
         return User.fromJson(json)
     }
-
+    fun removeUser(context: Context?) {
+        val sharedPref = getSharedPreferences(context) ?: return
+        val editor = sharedPref.edit()
+        editor.remove(userKey)  // Remove the user data
+        editor.apply()
+    }
     fun putSharing(context: Context?, sharing: Boolean) {
         val sharedPref = getSharedPreferences(context) ?: return
         val editor = sharedPref.edit()

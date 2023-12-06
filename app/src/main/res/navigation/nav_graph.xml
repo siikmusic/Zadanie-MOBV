@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/introFragment">
+    app:startDestination="@id/login_fragment">
 
     <fragment
         android:id="@+id/login_fragment"
@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_login_fragment_to_recoverPassword1Fragment"
             app:destination="@id/recoverPassword1Fragment" />
+        <action
+            android:id="@+id/action_login_fragment_to_signup_fragment"
+            app:destination="@id/signup_fragment" />
     </fragment>
 
     <fragment android:id="@+id/signup_fragment" android:name="com.example.zadaniemobv.SignUpFragment" >
@@ -68,8 +71,8 @@
         android:name="com.example.zadaniemobv.RecoverPassword2Fragment"
         android:label="RecoverPassword2Fragment" >
         <action
-            android:id="@+id/action_recoverPassword2Fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
+            android:id="@+id/action_recoverPassword2Fragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -81,6 +84,15 @@
         <action
             android:id="@+id/action_profileFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_recoverPassword2Fragment"
+            app:destination="@id/recoverPassword2Fragment" />
+        <action
+            android:id="@+id/action_global_loginFragment"
+            app:destination="@id/login_fragment"/>
+        <action
+            android:id="@+id/action_profileFragment_to_login_fragment"
+            app:destination="@id/login_fragment" />
     </fragment>
     <fragment
         android:id="@+id/profileUserFragment"

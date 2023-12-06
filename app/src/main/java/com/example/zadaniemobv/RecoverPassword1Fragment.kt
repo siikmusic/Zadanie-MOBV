@@ -45,12 +45,14 @@ class RecoverPassword1Fragment : Fragment(R.layout.fragment_recover_password1) {
         }.also { bnd ->
 
             viewModel.resetResult.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    Snackbar.make(
-                        bnd.loginButton,
-                        it,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                if (it != null) {
+                    if (it.isNotEmpty()) {
+                        Snackbar.make(
+                            bnd.loginButton,
+                            it,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }

@@ -1,29 +1,59 @@
 package com.example.zadaniemobv
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.zadaniemobv.api.DataRepository
+import com.example.zadaniemobv.databinding.FragmentRecoverPassword1Binding
+import com.example.zadaniemobv.databinding.FragmentRecoverPassword2Binding
+import com.example.zadaniemobv.viewModel.AuthViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class RecoverPassword2Fragment : Fragment(R.layout.fragment_recover_password2) {
+    private lateinit var viewModel: AuthViewModel
+    private lateinit var binding: FragmentRecoverPassword2Binding
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return AuthViewModel(DataRepository.getInstance(requireContext())) as T
+            }
+        })[AuthViewModel::class.java]
+    }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentRecoverPassword2Binding.inflate(inflater, container, false)
+        return binding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.apply {
+            lifecycleOwner = viewLifecycleOwner
+            model = viewModel
+        }.also { bnd ->
 
-        val submitButton: Button = view.findViewById(R.id.login_button)
-        submitButton.setOnClickListener {
-            /* val password: String = view.findViewById<EditText>(R.id.password).text.toString()
-             val password_confirmed: String = view.findViewById<EditText>(R.id.password2).text.toString()
-             if (password != password_confirmed){
-                 Log.d("Error", "Passwords dont match")
-             }
-             val username: String = view.findViewById<EditText>(R.id.username).text.toString()
-             val email: String = view.findViewById<EditText>(R.id.email).text.toString()
-                         */
+            viewModel.changeResult.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    if (it.isNotEmpty()) {
 
-            findNavController().navigate(R.id.action_recoverPassword2Fragment_to_login_fragment)
-
+                        Snackbar.make(
+                            bnd.loginButton,
+                            it,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
 
     }

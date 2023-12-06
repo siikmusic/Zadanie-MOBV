@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -17,36 +18,37 @@
             android:text="Map"
             android:textSize="34sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.064" />
-        <ImageView
-            android:id="@+id/my_location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:padding="20dp"
-            android:paddingStart="10dp"
-            android:src="@drawable/common_google_signin_btn_icon_light"
-            app:layout_constraintStart_toStartOf="@id/mapView"
-            app:layout_constraintTop_toTopOf="@id/mapView" />
-        <com.mapbox.maps.MapView xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+            mapbox:layout_constraintBottom_toBottomOf="parent"
+            mapbox:layout_constraintEnd_toEndOf="parent"
+            mapbox:layout_constraintStart_toStartOf="parent"
+            mapbox:layout_constraintTop_toTopOf="parent"
+            mapbox:layout_constraintVertical_bias="0.064" />
+
+        <com.mapbox.maps.MapView
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             mapbox:mapbox_cameraTargetLat="40.7128"
             mapbox:mapbox_cameraTargetLng="-74.0060"
-            mapbox:mapbox_cameraZoom="9.0" />
+            mapbox:mapbox_cameraZoom="9.0" >
+
+            <ImageView
+                android:id="@+id/my_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="20dp"
+                android:paddingStart="10dp"
+                android:src="@drawable/my_location_24px" />
+        </com.mapbox.maps.MapView>
 
 
         <com.example.zadaniemobv.navbar.Navbar
             android:id="@+id/bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            mapbox:layout_constraintBottom_toBottomOf="parent"
+            mapbox:layout_constraintStart_toStartOf="parent"
+            mapbox:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

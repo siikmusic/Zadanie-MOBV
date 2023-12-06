@@ -2,7 +2,11 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.ZadanieMOBV" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/rose</item>
+        <item name="colorSecondary">@color/rose</item>
+        <item name="textFillColor">@color/text</item>
+        <item name="backgroundColor">@color/black</item>
+
     </style>
 
     <style name="Theme.ZadanieMOBV" parent="Base.Theme.ZadanieMOBV" />

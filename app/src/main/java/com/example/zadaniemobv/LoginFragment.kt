@@ -46,12 +46,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             model = viewModel
         }.also { bnd ->
             viewModel.loginResult.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    Snackbar.make(
-                        bnd.loginButton,
-                        it,
-                        Snackbar.LENGTH_SHORT
-                    ).show()
+                if (it != null) {
+                    if (it.isNotEmpty()) {
+                        Snackbar.make(
+                                    bnd.loginButton,
+                                    it,
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
+                    }
                 }
             }
 
@@ -61,6 +63,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     requireView().findNavController()
                         .navigate(R.id.action_login_fragment_to_mapFragment)
                 } ?: PreferenceData.getInstance().putUser(requireContext(), null)
+            }
+            bnd.toSignUp.setOnClickListener {
+                requireView().findNavController()
+                    .navigate(R.id.action_login_fragment_to_signup_fragment)
             }
             bnd.forgotPassword.setOnClickListener {
                 requireView().findNavController()

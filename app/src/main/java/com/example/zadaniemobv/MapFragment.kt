@@ -23,30 +23,33 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.Gravity
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.zadaniemobv.api.DataRepository
 import com.example.zadaniemobv.entities.UserEntity
+import com.example.zadaniemobv.model.DataUser
+import com.example.zadaniemobv.viewModel.AuthViewModel
 import com.example.zadaniemobv.viewModel.FeedViewModel
 import com.example.zadaniemobv.viewModel.LocationViewModel
+import com.example.zadaniemobv.viewModel.ProfileViewModel
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.JsonPrimitive
 import com.mapbox.android.gestures.MoveGestureDetector
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Polygon
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.Style
-import com.mapbox.maps.extension.style.layers.addLayer
-import com.mapbox.maps.extension.style.layers.generated.CircleLayer
-import com.mapbox.maps.extension.style.layers.generated.fillLayer
-import com.mapbox.maps.extension.style.layers.properties.generated.CirclePitchAlignment
-import com.mapbox.maps.extension.style.sources.addSource
-import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
-import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
-import com.mapbox.maps.extension.style.sources.getSourceAs
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
@@ -56,9 +59,6 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.squareup.picasso.Picasso
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.random.Random
 
 class MapFragment : Fragment(R.layout.fragment_map) {
@@ -66,12 +66,20 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     private var selectedPoint: CircleAnnotation? = null
     private var lastLocation: Point? = null
     private lateinit var annotationManager: CircleAnnotationManager
+    private lateinit var pointAnnotationManager: PointAnnotationManager
     private lateinit var sharedViewModel: LocationViewModel
     private lateinit var viewModel: FeedViewModel
+    private lateinit var profileViewModel: ProfileViewModel
+    private var lastRefreshTime: Long = 0
+
+    private lateinit var authViewModel: AuthViewModel
+
     private lateinit var currentUsers: List<UserEntity>
     private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     private var photoPrefix = "https://upload.mcomputing.eu/";
-
+    private val handler = Handler(Looper.getMainLooper())
+    private var delayedRunnable: Runnable? = null
+    private var lastPoint: Point? = null
     val requestPermissionLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -83,8 +91,10 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         }
 
     fun hasPermissions(context: Context) = PERMISSIONS_REQUIRED.all {
+        if (profileViewModel.sharingLocation.value != null && !profileViewModel.sharingLocation.value!!) return false;
         ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
+
     fun resizeBitmap(source: Bitmap, width: Int, height: Int): Bitmap {
         return Bitmap.createScaledBitmap(source, width, height, false)
     }
@@ -109,12 +119,14 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
         return output
     }
+
     fun randomPointWithinRadius(latitude: Double, longitude: Double, radiusMeters: Double): Point {
         // Convert radius from meters to degrees (approximately)
-        val radiusInDegrees = radiusMeters * 2 / 111320
+        val radiusInDegrees = radiusMeters / 111320
 
-        // Generate random distance and angle
-        val distance = Random.nextDouble() * radiusInDegrees
+        // Generate a biased random distance and angle
+        // Bias the distance towards the edge of the circle
+        val distance = radiusInDegrees * (0.75 + Random.nextDouble() * 0.25)
         val angle = Random.nextDouble() * 2 * Math.PI
 
         // Calculate the coordinates
@@ -124,13 +136,21 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         // New coordinates
         val newLat = latitude + deltaLat
         val newLon = longitude + deltaLon
+
         return Point.fromLngLat(newLon, newLat)
     }
+
     fun displayUsersOnMap(users: List<UserEntity>, baseLat: Double, baseLon: Double) {
-        // Load the map style only once
-        binding.mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS) { style ->
-            // Create a single instance of the annotation manager
-            val annotationManager = binding.mapView.annotations.createPointAnnotationManager()
+        val userIdToUserData = mutableMapOf<String, UserEntity>()
+        for (user in users) {
+            userIdToUserData[user.uid] = user
+        }
+        annotationManager.deleteAll()
+        addMarker(Point.fromLngLat(baseLon, baseLat))
+
+        pointAnnotationManager.deleteAll()
+
+        binding.mapView.getMapboxMap().loadStyleUri(Style.DARK) { style ->
 
             users.forEach { user ->
                 var photoUrl = if (user.photo != "") photoPrefix + user.photo
@@ -142,7 +162,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                     .load(photoUrl)
                     .into(object : com.squareup.picasso.Target {
                         override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
-                            val resizedBitmap = resizeBitmap(bitmap, 70, 70) // Set your desired width and height
+                            val resizedBitmap =
+                                resizeBitmap(bitmap, 70, 70) // Set your desired width and height
                             val circularBitmap = getCircularBitmap(resizedBitmap)
 
                             // Use a unique ID for each user's custom icon
@@ -154,8 +175,10 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                             // Add point (marker) annotation
                             val pointAnnotationOptions = PointAnnotationOptions()
                                 .withPoint(point)
-                                .withIconImage(iconId) // Reference the unique custom icon
-                            annotationManager.create(pointAnnotationOptions)
+                                .withIconImage(iconId)
+                                .withData(JsonPrimitive(user.uid)) // Reference the unique custom icon
+                            val annotation = pointAnnotationManager.create(pointAnnotationOptions)
+
                         }
 
                         override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
@@ -167,7 +190,44 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                         }
                     })
             }
+            pointAnnotationManager.apply {
+                addClickListener(
+                    OnPointAnnotationClickListener { pointAnnotation ->
+                        if (userIdToUserData.isNotEmpty()) {
+                            val id = pointAnnotation.id
+                            val uid = pointAnnotation.getData().toString()
+                                .substring(1, pointAnnotation.getData().toString().length - 1)
+                            val userData = userIdToUserData[uid]
+                            Log.d("DISPLAYUSERS", "" + id + uid + userIdToUserData)
+                            //Log.d("DISPLAYUSERS", "$userData")
+                            val bundle = Bundle()
+                            val dataUser = userData?.let {
+                                DataUser(
+                                    it.name,
+                                    it.photo,
+                                    baseLat,
+                                    baseLon,
+                                    it.radius
+                                )
+                            }
+                            bundle.putSerializable("user", dataUser)
+                            findNavController().navigate(
+                                R.id.action_mapFragment_to_profileUserFragment,
+                                bundle
+                            )
+                        } else {
+                            Snackbar.make(
+                                binding.mapView,
+                                "Cannot retrieve user data, wait a second",
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                        true // Return true to consume the event
+                    }
+                )
+            }
         }
+
     }
 
 
@@ -175,22 +235,47 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        if (!isNetworkAvailable(requireContext())) {
+            Toast.makeText(requireContext(), "No internet connection available", Toast.LENGTH_SHORT).show()
+        }
         binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
+    }
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedViewModel = ViewModelProvider(requireActivity())[LocationViewModel::class.java]
+        authViewModel = ViewModelProvider(requireActivity())[AuthViewModel::class.java]
+        profileViewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return ProfileViewModel(DataRepository.getInstance(requireContext())) as T
+            }
+        })[ProfileViewModel::class.java]
+
         viewModel = ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return FeedViewModel(DataRepository.getInstance(requireContext())) as T
             }
         })[FeedViewModel::class.java]
         viewModel.feed_items.observe(viewLifecycleOwner, Observer { users ->
-            // This will be triggered whenever the feed_items data changes
-            Log.d("USERSMap",""+users)
+
             if (users != null) {
-                currentUsers = users
+                val filteredUsers = users.filter { user ->
+                    user.name != authViewModel.username.value
+                }
+
+                currentUsers = filteredUsers
             }
         })
         binding.apply {
@@ -198,17 +283,25 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         }.also { bnd ->
 
             annotationManager = bnd.mapView.annotations.createCircleAnnotationManager()
+            pointAnnotationManager = bnd.mapView.annotations.createPointAnnotationManager()
 
             val hasPermission = hasPermissions(requireContext())
+            if (!hasPermission) {
+                Toast.makeText(requireContext(), "Location permission is required to show users on map", Toast.LENGTH_SHORT).show()
+            }
             onMapReady(hasPermission)
 
             bnd.myLocation.setOnClickListener {
                 if (!hasPermissions(requireContext())) {
+
                     requestPermissionLauncher.launch(
                         Manifest.permission.ACCESS_FINE_LOCATION
                     )
+
                 } else {
-                    lastLocation?.let { refreshLocation(it) }
+                    lastLocation?.let {
+                        refreshLocation(it)
+                    }
                     addLocationListeners()
                 }
             }
@@ -224,7 +317,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
                 .build()
         )
         binding.mapView.getMapboxMap().loadStyleUri(
-            Style.MAPBOX_STREETS
+            Style.DARK
         ) {
             if (enabled) {
                 initLocationComponent()
@@ -239,6 +332,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             true
         }
     }
+
     private fun initLocationComponent() {
         val locationComponentPlugin = binding.mapView.location
         locationComponentPlugin.updateSettings {
@@ -260,69 +354,50 @@ class MapFragment : Fragment(R.layout.fragment_map) {
     }
 
     private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
-        Log.d("MapFragment", "poloha je $it")
+        Log.d("Location Changed","LOCATION CHANGED")
         refreshLocation(it)
     }
 
     private fun refreshLocation(point: Point) {
         binding.mapView.getMapboxMap()
-            .setCamera(CameraOptions.Builder().center(point).zoom(14.0).build())
+            .setCamera(CameraOptions.Builder().center(point).zoom(15.0).build())
         binding.mapView.gestures.focalPoint =
             binding.mapView.getMapboxMap().pixelForCoordinate(point)
         lastLocation = point
-        addMarker(point)
-        if (::currentUsers.isInitialized) {
-            displayUsersOnMap(currentUsers, point.latitude(), point.longitude())
+        val currentTime = System.currentTimeMillis()
+        // Check if 10 seconds have passed since the last refresh
+        if (currentTime - lastRefreshTime < 5000) {
+            return // If not, simply return
         }
+        Log.d("MapFragmentRefresh", "poloha je $point")
 
+
+        if (hasPermissions(requireContext())) {
+            if (::currentUsers.isInitialized) {
+                displayUsersOnMap(currentUsers, point.latitude(), point.longitude())
+            }
+        }
+        lastRefreshTime = currentTime
     }
-    fun createGeoJSONCircle(center: Point, radiusInKm: Double, points: Int = 64): FeatureCollection {
-        val coords = center.latitude() to center.longitude()
-        val km = radiusInKm
 
-        val ret = mutableListOf<Point>()
-        val distanceX = km / (111.320 * cos(coords.first * PI / 180))
-        val distanceY = km / 110.574
+    private fun scheduleDelayedRefresh(point: Point) {
+        // Update the last point
+        lastPoint = point
 
-        var theta: Double
-        var x: Double
-        var y: Double
-        for (i in 0 until points) {
-            theta = (i.toDouble() / points) * (2 * PI)
-            x = distanceX * cos(theta)
-            y = distanceY * sin(theta)
-            ret.add(Point.fromLngLat(coords.second + x, coords.first + y))
+        // Create or update the runnable
+        delayedRunnable = Runnable {
+            lastPoint?.let { refreshLocation(it) }
         }
-        ret.add(ret[0]) // Close the polygon
 
-        // Create a GeoJSON FeatureCollection
-        val polygon = Polygon.fromLngLats(listOf(ret))
-        return FeatureCollection.fromFeatures(listOf(Feature.fromGeometry(polygon)))
+        // Remove any existing callbacks to avoid multiple executions
+        handler.removeCallbacks(delayedRunnable!!)
+
+        // Schedule the new execution
+        handler.postDelayed(delayedRunnable!!, 10000)
     }
 
     private fun addMarker(point: Point) {
-        val style = binding.mapView.getMapboxMap().getStyle() ?: return
 
-        val sourceId = "circle-source"
-        val featureCollection = createGeoJSONCircle(point, 1.0)
-
-// Check if the source already exists
-        val source = style.getSourceAs<GeoJsonSource>(sourceId)
-        if (source != null) {
-            // Update the source's feature collection
-            source.featureCollection(featureCollection)
-        } else {
-            // Add the source to the map as it doesn't exist
-            style.addSource(geoJsonSource(sourceId) {
-                featureCollection(featureCollection)
-            })
-
-            // Create and add the layer to the map
-            style.addLayer(fillLayer("circle-layer", sourceId) {
-                fillColor("blue")
-                fillOpacity(0.6)
-            })
-        }
     }
 
     private val onMoveListener = object : OnMoveListener {
@@ -351,5 +426,8 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             location.removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
             gestures.removeOnMoveListener(onMoveListener)
         }
+        //runnable?.let { handler.removeCallbacks(it) }
+        delayedRunnable?.let { handler.removeCallbacks(it) }
+
     }
 }

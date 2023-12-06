@@ -4,6 +4,16 @@
     <string name="profile_gps">Turn on GPS</string>
     <string name="time_of_tracking">Time for leaving GPS on (minutes)</string>
     <string name="change_password">Change password</string>
+    <string name="login">Log In</string>
+    <string name="forgot_passsword">Forgot Password?</string>
+    <string name="welcome_back">Welcome back!</string>
     <string name="mapbox_access_token">pk.eyJ1IjoieHBhdmxpa3MiLCJhIjoiY2xvZzZmOHlsMHpzcjJpbWVzZjIyNnl3byJ9.y4qcUjigGslg3mbjdyw1YA</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up!</string>
+    <string name="enter_your_credentials_to_log_in">Enter your credentials to log in.</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="user_site_com">user@site.com</string>
+    <string name="log_out">Log Out</string>
 
 </resources>

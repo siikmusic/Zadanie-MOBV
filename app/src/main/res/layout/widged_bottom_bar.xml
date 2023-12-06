@@ -3,14 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@drawable/rounded_corner_bottom"
+    android:outlineSpotShadowColor="#303030">
 
     <ImageView
         android:id="@+id/map_image"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:padding="13dp"
-        android:src="@drawable/map"
+        android:src="@drawable/map_icon_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/feed_image"
         app:layout_constraintStart_toStartOf="parent" />
@@ -20,7 +21,7 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:padding="13dp"
-        android:src="@drawable/home_fill0_wght400_grad0_opsz24"
+        android:src="@drawable/home_icon_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/profile_image"
         app:layout_constraintStart_toEndOf="@id/map_image" />
@@ -30,7 +31,7 @@
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:padding="13dp"
-        android:src="@drawable/person_fill0_wght400_grad0_opsz24"
+        android:src="@drawable/user_icon_selector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/feed_image" />
